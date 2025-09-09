@@ -2,15 +2,14 @@ package io.github.alexcheng1982.java21to25.scopedvalue;
 
 public class SimpleScopedValue {
 
-    private final static ScopedValue<String> VALUE = ScopedValue.newInstance();
+  private final static ScopedValue<String> VALUE = ScopedValue.newInstance();
 
-    public void print() {
-        ScopedValue.where(VALUE, "hello").run(() -> {
-            System.out.println(VALUE.get());
-        });
-    }
+  void print() {
+    ScopedValue.where(VALUE, "hello")
+        .run(() -> System.out.println(VALUE.get()));
+  }
 
-    static void main() {
-        new SimpleScopedValue().print();
-    }
+  static void main() {
+    new SimpleScopedValue().print();
+  }
 }
