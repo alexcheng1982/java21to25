@@ -4,18 +4,9 @@ import java.time.Duration;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Joiner;
 
-public class OpenStructuredTaskScope {
+public class OpenScopeWithConfiguration {
 
-  int openAny() throws InterruptedException {
-    try (var scope = StructuredTaskScope.open(
-        Joiner.anySuccessfulResultOrThrow())) {
-      scope.fork(() -> 3);
-      scope.fork(() -> 4);
-      return (int) scope.join();
-    }
-  }
-
-  int openWithConfiguration() throws InterruptedException {
+  int open() throws InterruptedException {
     try (var scope = StructuredTaskScope.open(
         Joiner.anySuccessfulResultOrThrow(),
         config -> config.withThreadFactory(
@@ -31,8 +22,6 @@ public class OpenStructuredTaskScope {
   }
 
   static void main() throws InterruptedException {
-    var sample = new OpenStructuredTaskScope();
-    System.out.println(sample.openAny());
-    System.out.println(sample.openWithConfiguration());
+    System.out.println(new OpenScopeWithConfiguration().open());
   }
 }

@@ -4,35 +4,32 @@ import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Joiner;
-import java.util.concurrent.StructuredTaskScope.Subtask;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class InvokeAll {
+public class AnySuccessful {
 
   static void main() throws Exception {
-    System.out.println(new InvokeAll().invokeAll());
+    System.out.println(new AnySuccessful().call());
   }
 
-  public long invokeAll() throws InterruptedException {
+  public int call() throws InterruptedException {
     try (var scope = StructuredTaskScope.open(
-        Joiner.<Integer>allSuccessfulOrThrow())) {
+        Joiner.<Integer>anySuccessfulResultOrThrow())) {
       subTasks().forEach(scope::fork);
-      var subtasks = scope.join();
-      return subtasks.map(Subtask::get).reduce(0, Integer::sum);
+      return scope.join();
     }
   }
 
   private Stream<Callable<Integer>> subTasks() {
-    return IntStream.range(0, 10_000)
+    return IntStream.range(0, 1000)
         .mapToObj(
             i ->
                 () -> {
                   try {
-                    Thread.sleep(
-                        Duration.ofSeconds(
-                            ThreadLocalRandom.current().nextLong(3)));
+                    Thread.sleep(Duration.ofSeconds(
+                        1 + ThreadLocalRandom.current().nextLong(10)));
                   } catch (InterruptedException e) {
                     // ignore
                   }
